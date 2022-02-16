@@ -6,6 +6,7 @@ from user.models import CustomUser
 from rest_framework.generics import CreateAPIView
 from .models import Dish, Order
 from django.shortcuts import get_object_or_404
+from .utils import get_order_by_id
 
 
 class AddOrderView(CreateAPIView):
@@ -72,19 +73,16 @@ class AcceptOrderView(APIView):
 
     def post(self, request):
 
-        order_id = request.data.get("id")
         response = Response()
-        if order_id is None:
-            response.data = {"detail": "No order ID provided"}
-            response.status_code = status.HTTP_400_BAD_REQUEST
+        order = get_order_by_id(request)
+        if type(order) == Order:
+            order.is_accepted = True
+            order.save()
+            response.data = {
+                "detail": f"The order has been accepted by the restaurant"}
             return response
-
-        order = get_object_or_404(Order, unique_id=int(order_id))
-        order.is_accepted = True
-        order.save()
-        response.data = {
-            "detail": f"The order with the ID: {int(order_id)} has been accepted by the restaurant"}
-        return response
+        else:
+            return order
 
 
 class CompleteOrderView(APIView):
@@ -93,15 +91,13 @@ class CompleteOrderView(APIView):
 
     def post(self, request):
 
-        order_id = request.data.get("id")
         response = Response()
-        if order_id is None:
-            response.body = {"detail": "No order ID provided"}
-            response.status_code = status.HTTP_400_BAD_REQUEST
-
-        order = get_object_or_404(Order, unique_id=int(order_id))
-        order.is_completed = True
-        order.save()
-        response.data = {
-            "detail": f"The order with the ID: {int(order_id)} has been completed by the restaurant"}
-        return response
+        order = get_order_by_id(request)
+        if type(order) == Order:
+            order.is_completed = True
+            order.save()
+            response.data = {
+                "detail": f"The order has been completed by the restaurant"}
+            return response
+        else:
+            return order
