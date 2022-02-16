@@ -28,9 +28,9 @@ class Order(models.Model):
     is_accepted = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
     customer = models.ForeignKey(
-        User, related_name='placed_orders', on_delete=models.CASCADE, null=False, blank=False)
+        User, related_name='placed_orders', on_delete=models.CASCADE, null=True)
     restaurant = models.ForeignKey(
-        User, related_name='received_orders', on_delete=models.CASCADE, null=False, blank=False)
+        User, related_name='received_orders', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f'Order: placed on {self.ordered_on.strftime("%b %d, %I:%M %p")}'
