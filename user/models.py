@@ -39,6 +39,8 @@ class CustomUser(AbstractUser):
     is_active = models.BooleanField(default=True)
     username = models.CharField(
         max_length=255, unique=False, null=True, blank=True)
+    is_customer = models.BooleanField(default=False)
+    is_restaurant = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
