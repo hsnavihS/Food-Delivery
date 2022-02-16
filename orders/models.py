@@ -1,3 +1,4 @@
+import uuid
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db import models
@@ -31,6 +32,8 @@ class Order(models.Model):
         User, related_name='placed_orders', on_delete=models.CASCADE, null=True)
     restaurant = models.ForeignKey(
         User, related_name='received_orders', on_delete=models.CASCADE, null=True)
+    unique_id = models.UUIDField(
+        default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
         return f'Order: placed on {self.ordered_on.strftime("%b %d, %I:%M %p")}'

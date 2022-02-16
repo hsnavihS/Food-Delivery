@@ -11,6 +11,7 @@ from user.permissions import IsCustomer, IsLoggedIn
 from user.models import CustomUser
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from .models import Dish, Order
+from django.shortcuts import get_object_or_404
 
 
 class AddOrderView(CreateAPIView):
@@ -30,15 +31,24 @@ class AddOrderView(CreateAPIView):
             return response
         else:
             customer_id = user.get('customer')
-            restaurant_mail = user.get('restaurant')
-            if customer_id is None or restaurant_mail is None:
+            restaurant_id = user.get('restaurant')
+            if customer_id is None or restaurant_id is None:
                 response.data = {
                     "Error": "Both a customer and restaurant account must be affiliated with an order"}
                 response.status_code = status.HTTP_400_BAD_REQUEST
                 return response
             else:
-                customer = CustomUser.objects.get(id=int(customer_id))
-                restaurant = CustomUser.objects.get(email=restaurant_mail)
+
+                customer = get_object_or_404(
+                    CustomUser, id=int(customer_id))
+                restaurant = get_object_or_404(
+                    CustomUser, id=int(restaurant_id))
+
+                if not restaurant.is_restaurant:
+                    response.data = {"Error": "Incorrect restaurant details"}
+                    response.status_code = status.HTTP_400_BAD_REQUEST
+                    return response
+
                 order = Order.objects.create(
                     customer=customer, restaurant=restaurant)
 
