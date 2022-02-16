@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from orders.models import Dish
 
 
 User = settings.AUTH_USER_MODEL
@@ -41,6 +42,9 @@ class CustomUser(AbstractUser):
         max_length=255, unique=False, null=True, blank=True)
     is_customer = models.BooleanField(default=False)
     is_restaurant = models.BooleanField(default=False)
+    menu = models.ManyToManyField(
+        Dish, related_name='preparing_restaurants', blank=True)
+    # TODO: Add address and picture fields
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

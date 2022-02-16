@@ -55,7 +55,10 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {
-         'fields': ('username', 'is_customer', 'is_restaurant')}),
+         'fields': ('username', 'is_customer', 'is_restaurant',)}),
+        ('Order Info', {
+            'fields': ('menu',)
+        }),
         ('Permissions', {'fields': ('is_superuser',)}),
     )
     add_fieldsets = (
