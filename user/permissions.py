@@ -23,3 +23,23 @@ class IsAdmin(permissions.BasePermission):
             user = CustomUser.objects.get(id=user_id)
             return user.is_superuser
         return False
+
+
+class IsRestaurant(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        user_id = request.COOKIES.get(settings.SIMPLE_JWT['COOKIE_KEY'], None)
+        if user_id is not None:
+            user = CustomUser.objects.get(id=user_id)
+            return user.is_restaurant
+        return False
+
+
+class IsCustomer(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        user_id = request.COOKIES.get(settings.SIMPLE_JWT['COOKIE_KEY'], None)
+        if user_id is not None:
+            user = CustomUser.objects.get(id=user_id)
+            return user.is_customer
+        return False

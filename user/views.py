@@ -30,8 +30,6 @@ class LoginView(APIView):
 
         user = authenticate(email=email, password=password)
 
-        print(user)
-
         response = Response()
 
         if user is not None:
