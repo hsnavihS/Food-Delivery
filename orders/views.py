@@ -1,15 +1,9 @@
-from django.shortcuts import render
-# AddOrderView, AllOrdersView, ClearOrderView, CurrentOrderView
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.contrib.auth import authenticate
-from django.conf import settings
-from user.serializers import CustomUserSerializer
-from user.permissions import IsCustomer, IsLoggedIn
+from user.permissions import IsCustomer, IsLoggedIn, IsRestaurant
 from user.models import CustomUser
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import CreateAPIView
 from .models import Dish, Order
 from django.shortcuts import get_object_or_404
 
@@ -30,6 +24,7 @@ class AddOrderView(CreateAPIView):
             response.status_code = status.HTTP_400_BAD_REQUEST
             return response
         else:
+
             customer_id = user.get('customer')
             restaurant_id = user.get('restaurant')
             if customer_id is None or restaurant_id is None:
@@ -71,11 +66,42 @@ class AddOrderView(CreateAPIView):
         return response
 
 
-# class AllOrdersView(ListAPIView):
+class AcceptOrderView(APIView):
 
-#     permission_classes = [IsLoggedIn]
+    permission_classes = [IsLoggedIn, IsRestaurant]
 
-#     def get(self, request):
-#         pass
-        # queryset = Anime.objects.all()
-        # serializer_class = AnimeDetailSerializer
+    def post(self, request):
+
+        order_id = request.data.get("id")
+        response = Response()
+        if order_id is None:
+            response.data = {"detail": "No order ID provided"}
+            response.status_code = status.HTTP_400_BAD_REQUEST
+            return response
+
+        order = get_object_or_404(Order, unique_id=int(order_id))
+        order.is_accepted = True
+        order.save()
+        response.data = {
+            "detail": f"The order with the ID: {int(order_id)} has been accepted by the restaurant"}
+        return response
+
+
+class CompleteOrderView(APIView):
+
+    permission_classes = [IsLoggedIn, IsRestaurant]
+
+    def post(self, request):
+
+        order_id = request.data.get("id")
+        response = Response()
+        if order_id is None:
+            response.body = {"detail": "No order ID provided"}
+            response.status_code = status.HTTP_400_BAD_REQUEST
+
+        order = get_object_or_404(Order, unique_id=int(order_id))
+        order.is_completed = True
+        order.save()
+        response.data = {
+            "detail": f"The order with the ID: {int(order_id)} has been completed by the restaurant"}
+        return response

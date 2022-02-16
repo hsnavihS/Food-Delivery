@@ -1,6 +1,4 @@
 import uuid
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.db import models
 from django.conf import settings
 
@@ -37,14 +35,3 @@ class Order(models.Model):
 
     def __str__(self):
         return f'Order: placed on {self.ordered_on.strftime("%b %d, %I:%M %p")}'
-
-
-# TODO: calculate total price of an order using a view or a signal
-# @receiver(post_save, sender=Order)
-# def my_callback(sender, instance, update_fields, *args, **kwargs):
-#     if update_fields is None:
-#         price = 0
-#         for item in instance.items.all():
-#             price += float(item.price)
-#         instance.price = price
-#         instance.save(update_fields=['price'])

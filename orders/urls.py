@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import AddOrderView  # , AllOrdersView, ClearOrderView, CurrentOrderView
+# , AllOrdersView, ClearOrderView, CurrentOrderView
+from .views import AcceptOrderView, AddOrderView, CompleteOrderView
 
 urlpatterns = [
     path('add', AddOrderView.as_view(), name="add-order"),
-    # path('view', CurrentOrderView.as_view(), name='current-order'),
-    # path('viewall', AllOrdersView.as_view(), name='my-orders'),
-    # path('clear', ClearOrderView.as_view(), name='clear-cart'),
+    path('accept', AcceptOrderView.as_view(), name="accept-order"),
+    path('complete', CompleteOrderView.as_view(), name="complete-order"),
 ]
