@@ -1,18 +1,29 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from django.conf import settings
-from .serializers import CustomUserSerializer
+from .serializers import CustomerSerializer, RestaurantSerializer
 from .permissions import IsLoggedIn
 from .models import CustomUser
+from rest_framework.generics import CreateAPIView
 
 
-class RegisterView(APIView):
+class CustomerRegisterView(CreateAPIView):
 
     def post(self, request):
-        serializer = CustomUserSerializer(data=request.data)
+        serializer = CustomerSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class RestaurantRegisterView(CreateAPIView):
+
+    def post(self, request):
+        serializer = RestaurantSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -58,9 +69,13 @@ class UserView(APIView):
 
     def get(self, request):
         user_id = request.COOKIES.get(settings.SIMPLE_JWT['COOKIE_KEY'])
-        user = CustomUser.objects.get(id=user_id)
-        serializer = CustomUserSerializer(user, many=False)
-        return Response(serializer.data)
+        user = get_object_or_404(CustomUser, id=user_id)
+        if user.is_restaurant:
+            serializer = RestaurantSerializer(user, many=False)
+            return Response(serializer.data)
+        else:
+            serializer = CustomerSerializer(user, many=False)
+            return Response(serializer.data)
 
 
 class LogoutView(APIView):
