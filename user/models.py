@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from orders.models import Dish
+from cloudinary.models import CloudinaryField
 
 
 User = settings.AUTH_USER_MODEL
@@ -44,7 +45,8 @@ class CustomUser(AbstractUser):
     is_restaurant = models.BooleanField(default=False)
     menu = models.ManyToManyField(
         Dish, related_name='preparing_restaurants', blank=True)
-    # TODO: Add address and picture fields
+    address = models.TextField(null=True, blank=True)
+    picture = CloudinaryField('image', blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

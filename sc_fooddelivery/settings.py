@@ -1,9 +1,13 @@
 from pathlib import Path
 from datetime import timedelta
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-=0zo6(2uwk8lr2v4p=$&6ry4fq+&59+^q4aepe)qb2w*pout-h'
+SECRET_KEY = config("SECRET_KEY")
 
 DEBUG = True
 
@@ -16,11 +20,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # external
-    'rest_framework',
     # internal
     'user',
-    'orders'
+    'orders',
+    # external
+    'rest_framework',
+    'corsheaders',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -87,21 +93,43 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# defining custom auth user model:
 
 AUTH_USER_MODEL = 'user.CustomUser'
 
+# JWT token and cookie settings:
+
 SIMPLE_JWT = {
+
+    # JWT token settings:
+
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(hours=2),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
     'UPDATE_LAST_LOGIN': False,
-    # cookie settings
+
+    # cookie settings:
+
     'COOKIE_KEY': 'id',
     'COOKIE_EXPIRES': 3600,
     'COOKIE_SECURE': False,
     'COOKIE_HTTP_ONLY': True,
     'COOKIE_PATH': '/',
     'COOKIE_SAMESITE': 'Lax'
+
 }
+
+# cloudinary settings:
+
+cloudinary.config(
+    cloud_name=config("CLOUD_NAME"),
+    api_key=config("API_KEY"),
+    api_secret=config("API_SECRET")
+)
