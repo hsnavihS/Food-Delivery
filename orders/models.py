@@ -27,9 +27,9 @@ class Order(models.Model):
     is_accepted = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
     customer = models.ForeignKey(
-        User, related_name='placed_orders', on_delete=models.CASCADE, null=True)
+        User, related_name='placed_orders', on_delete=models.CASCADE, null=True, blank=True)
     restaurant = models.ForeignKey(
-        User, related_name='received_orders', on_delete=models.CASCADE, null=True)
+        User, related_name='received_orders', on_delete=models.CASCADE, null=True, blank=True)
     unique_id = models.UUIDField(
         default=uuid.uuid4, editable=False, unique=True)
 

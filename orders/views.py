@@ -79,7 +79,7 @@ class AcceptOrderView(APIView):
             order.is_accepted = True
             order.save()
             response.data = {
-                "detail": f"The order has been accepted by the restaurant"}
+                "detail": "The order has been accepted by the restaurant"}
             return response
         else:
             return order
@@ -97,7 +97,7 @@ class CompleteOrderView(APIView):
             order.is_completed = True
             order.save()
             response.data = {
-                "detail": f"The order has been completed by the restaurant"}
+                "detail": "The order has been completed by the restaurant"}
             return response
         else:
             return order
