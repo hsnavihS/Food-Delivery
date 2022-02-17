@@ -45,7 +45,7 @@ class CustomUser(AbstractUser):
     is_restaurant = models.BooleanField(default=False)
     menu = models.ManyToManyField(
         Dish, related_name='preparing_restaurants', blank=True)
-    address = models.TextField()
+    address = models.TextField(null=True, blank=True)
     picture = CloudinaryField('image', blank=True, null=True)
 
     USERNAME_FIELD = 'email'
