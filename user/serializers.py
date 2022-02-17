@@ -4,12 +4,22 @@ from .models import CustomUser
 
 class CustomerSerializer(serializers.ModelSerializer):
 
+    profile_picture = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomUser
-        fields = ['email', 'username', 'password', 'is_customer']
+        fields = ['email', 'username', 'password',
+                  'is_customer', 'address', 'profile_picture']
         extra_kwargs = {
             'password': {'write_only': True},
         }
+
+    def get_profile_picture(self, obj):
+        if obj.picture is not None:
+            profile_picture = obj.picture.url
+            return profile_picture
+        else:
+            return None
 
     def create(self, validated_data):
 
@@ -25,12 +35,22 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 class RestaurantSerializer(serializers.ModelSerializer):
 
+    restaurant_image = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomUser
-        fields = ['email', 'username', 'password', 'is_restaurant']
+        fields = ['email', 'username', 'password',
+                  'is_restaurant', 'address', 'restaurant_image']
         extra_kwargs = {
             'password': {'write_only': True},
         }
+
+    def get_restaurant_image(self, obj):
+        if obj.picture is not None:
+            restaurant_image = obj.picture.url
+            return restaurant_image
+        else:
+            return None
 
     def create(self, validated_data):
 

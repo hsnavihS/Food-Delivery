@@ -43,7 +43,7 @@ class UserChangeForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ('email', 'password', 'username',
-                  'is_active', 'is_superuser', 'is_customer', 'is_restaurant')
+                  'is_active', 'is_superuser', 'is_customer', 'is_restaurant', 'address', 'picture')
 
 
 class UserAdmin(BaseUserAdmin):
@@ -55,10 +55,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {
-         'fields': ('username', 'is_customer', 'is_restaurant',)}),
-        ('Order Info', {
-            'fields': ('menu',)
-        }),
+         'fields': ('username', 'is_customer', 'is_restaurant', 'picture', 'address', 'menu')}),
         ('Permissions', {'fields': ('is_superuser',)}),
     )
     add_fieldsets = (
