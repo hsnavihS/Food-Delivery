@@ -8,6 +8,8 @@ from .serializers import CustomerSerializer, RestaurantSerializer
 from .permissions import IsLoggedIn
 from rest_framework.generics import CreateAPIView
 from .utils import get_user
+from orders.models import Dish
+from orders.serializers import DishSerializer
 
 
 class CustomerRegisterView(CreateAPIView):
@@ -34,9 +36,21 @@ class RestaurantRegisterView(CreateAPIView):
     '''
 
     def post(self, request):
+        data = request.data
         serializer = RestaurantSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        restaurant = serializer.save()
+        if data.get('menu'):
+            for item in data.get('menu'):
+                if item.get('id'):
+                    dish = Dish.objects.get(id=int(item['id']))
+                    restaurant.menu.add(dish)
+                else:
+                    dish_serializer = DishSerializer(data=item)
+                    dish_serializer.is_valid(raise_exception=True)
+                    dish = dish_serializer.save()
+                    restaurant.menu.add(dish)
+            restaurant.save()
         return Response(serializer.data)
 
 

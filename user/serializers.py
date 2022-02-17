@@ -36,11 +36,12 @@ class CustomerSerializer(serializers.ModelSerializer):
 class RestaurantSerializer(serializers.ModelSerializer):
 
     restaurant_image = serializers.SerializerMethodField()
+    menu = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
         fields = ['email', 'username', 'password',
-                  'is_restaurant', 'address', 'restaurant_image']
+                  'is_restaurant', 'address', 'restaurant_image', 'menu']
         extra_kwargs = {
             'password': {'write_only': True},
         }
@@ -51,6 +52,16 @@ class RestaurantSerializer(serializers.ModelSerializer):
             return restaurant_image
         else:
             return None
+
+    def get_menu(self, obj):
+        dishes = obj.menu.all()
+        res = [{
+            "name": dish.name,
+            "description": dish.description,
+            "price": dish.price
+        }
+            for dish in dishes]
+        return res
 
     def create(self, validated_data):
 
