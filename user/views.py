@@ -9,7 +9,7 @@ from .permissions import IsLoggedIn
 from rest_framework.generics import CreateAPIView
 from .utils import get_user
 from orders.models import Dish
-from orders.serializers import DishSerializer
+from orders.serializers import DishSerializer, OrderSerializer
 
 
 class CustomerRegisterView(CreateAPIView):
@@ -189,3 +189,23 @@ class UserDeleteView(APIView):
         response.data = {"details": "Deleted user successfully"}
         response.status_code = status.HTTP_204_NO_CONTENT
         return response
+
+
+class AllOrdersView(APIView):
+
+    '''
+    View to get the current user's order history
+    Accepted method: GET
+    URI: /user/allorders
+    '''
+
+    permission_classes = [IsLoggedIn]
+
+    def get(self, request):
+        user = get_user(request)
+        if user.is_restaurant:
+            orders = user.received_orders.all()
+        elif user.is_customer:
+            orders = user.placed_orders.all()
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
