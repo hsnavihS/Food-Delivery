@@ -34,11 +34,18 @@ class AddOrderView(CreateAPIView):
                 response.status_code = status.HTTP_400_BAD_REQUEST
                 return response
             else:
-
                 customer = get_object_or_404(
                     CustomUser, id=int(customer_id))
                 restaurant = get_object_or_404(
                     CustomUser, id=int(restaurant_id))
+
+                try:
+                    CustomUser.placed_orders.get(is_completed=False)
+                except:
+                    response.data = {
+                        "detail": "The customer already has a pending order"}
+                    response.status_code = status.HTTP_406_NOT_ACCEPTABLE
+                    return response
 
                 if not restaurant.is_restaurant:
                     response.data = {"Error": "Incorrect restaurant details"}
@@ -57,9 +64,10 @@ class AddOrderView(CreateAPIView):
         else:
             order.price = 0
             for id in items:
-                dish = Dish.objects.get(id=int(id))
-                order.items.add(dish)
-                order.price += float(dish.price)
+                if restaurant.menu.filter(id=int(id)).exists():
+                    dish = Dish.objects.get(id=int(id))
+                    order.items.add(dish)
+                    order.price += float(dish.price)
 
         order.save()
         response.data = {
